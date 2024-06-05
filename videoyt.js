@@ -128,4 +128,10 @@ function extractVideoId(url) {
     }
 }
 
+const trial=(t)=>{
+    return (req,res)=>{
+        res.json({[t]:t})
+    }
+}
+
 module.exports={trial,sendVideo,eliminarCarpeta,extractVideoId}
