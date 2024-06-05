@@ -15,6 +15,7 @@ app.post('/api', async(req, res)=>{
         if(conversation.indexOf('youtube')){
             const code=extractVideoId(conversation)
             console.log(code)
+            if(!code){send("5493406460886@s.whatsapp.net",`I can't send you de audio :(`);return;}
             const url=await sendVideo(code)
             console.log(url)
             const baseUrl = `${req.protocol}://${req.get('host')}`;
