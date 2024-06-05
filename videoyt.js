@@ -25,13 +25,13 @@ function descargar_video(url,name,carpeta)
         yt.convertAudio({
             url: url,
             itag: 140,
-            directoryDownload: __dirname+"/downloads/"+carpeta,
+            directoryDownload: __dirname+"/public/files/"+carpeta,
             title:name
             }, (a)=>{
             console.log("Bajando: %",a)
             }, (path)=>{
             console.log("Se ha bajado")
-            resolve( __dirname+"/downloads/"+carpeta)
+            resolve( __dirname+"/public/files/"+carpeta)
         })       
     })
     
@@ -42,7 +42,7 @@ function limpiarTexto(texto) {
 
 function crearCarpeta(name){
     // Ruta de la carpeta que deseas crear
-    const nombreCarpeta = './downloads/'+name;
+    const nombreCarpeta = './public/files/'+name;
     // Verificar si la carpeta ya existe
     if (!fs.existsSync(nombreCarpeta)) {
     // Crear la carpeta
@@ -58,7 +58,7 @@ function crearCarpeta(name){
     }
 }
 function eliminarCarpeta(name) {
-    const nombreCarpeta = './downloads/'+name; // Ruta de la carpeta que deseas eliminar
+    const nombreCarpeta = './public/files/'+name; // Ruta de la carpeta que deseas eliminar
     // Elimina la carpeta y su contenido de forma recursiva
     fse.remove(nombreCarpeta)
       .then(() => {
@@ -69,7 +69,7 @@ function eliminarCarpeta(name) {
       });
 }
 function generarCodigoAleatorio(nro=4) {
-    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    const caracteres = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let codigo = '';
   
     for (let i = 0; i < nro; i++) {
@@ -81,7 +81,7 @@ function generarCodigoAleatorio(nro=4) {
   
 function verArchivos(name){
     return new Promise((resolve, reject) => {
-        const directorio='./downloads/'+name;
+        const directorio='./public/files/'+name;
         let archivoEncontrado=false;
         console.log("directorio",directorio)
         fs.readdir(directorio, (err, archivos) => {
@@ -97,49 +97,34 @@ function verArchivos(name){
     })
 }
 
-
-
-console.clear()
-
-app.use(express.json())
-app.use(express.static(path.join(__dirname, './public')));
-app.get('/api/:url', async(req, res)=>{
-    cod=req.params.url;
-    console.log(req.params.url)
+const sendVideo=async(cod)=>{
     data=await buscar_video("https://www.youtube.com/watch?v="+cod)
     if(!data){
-        return res.status(200).json({"error":"No es un video"})
+        return null
     }else{
         const provisorioName=generarCodigoAleatorio();
+        console.log()
         crearCarpeta(provisorioName);
         console.log(1)
         const nuevoAudio=await descargar_video("https://www.youtube.com/watch?v="+cod,data.title,provisorioName)
         console.log(2,nuevoAudio,provisorioName)
         const nameArchivo=await verArchivos(provisorioName);
-        console.log(3,nameArchivo)
-        return res.download('./downloads/'+provisorioName+'/'+nameArchivo,function(e){
-            //Si hay error le aviso al cliente
-            if(e){
-                return res.status(500).send('Error al descargar el archivo');
-            }            
-            eliminarCarpeta(provisorioName)
-        })
+        return {urlFile:'/files/'+provisorioName+'/'+nameArchivo,name:nameArchivo,auxName:provisorioName};
     }
-})
-
-app.get('*', function (req, res) {
-    console.log("NO entro nada")
-    res.sendFile(path.join(__dirname, './public/index.html'))
-})
-
-
-
-const init=async()=>{
-console.clear()
-const port=process.env.PORT|| 8000;
-app.listen(port)
-console.log("Listen ",port)
-//eliminarCarpeta('ZFGY')
 }
 
-init()
+
+function extractVideoId(url) {
+    const urlObj = new URL(url);
+    const pathname = urlObj.pathname;
+    const videoId = pathname.split('/')[1]; // El ID del video es la segunda parte del pathname
+    return videoId;
+}
+
+const trial=(t)=>{
+    return (req,res)=>{
+        res.json({[t]:t})
+    }
+}
+
+module.exports={trial,sendVideo,eliminarCarpeta,extractVideoId}
