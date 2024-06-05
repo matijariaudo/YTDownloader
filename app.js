@@ -14,8 +14,9 @@ app.post('/api', async(req, res)=>{
     if(remoteJid=='5493406460886@s.whatsapp.net'){
         if(conversation.indexOf('youtube')){
             const code=extractVideoId(conversation)
-            console.log(code)
-            if(!code){send("5493406460886@s.whatsapp.net",`I can't send you de audio :(`);return;}
+            console.log("codigo:",code)
+            if(!code){send("5493406460886@s.whatsapp.net",`I can't send you de audio :(`);return false;}
+            console.log("Seguimos")
             const url=await sendVideo(code)
             console.log(url)
             const baseUrl = `${req.protocol}://${req.get('host')}`;
