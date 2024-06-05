@@ -42,7 +42,7 @@ function limpiarTexto(texto) {
 
 function crearCarpeta(name){
     // Ruta de la carpeta que deseas crear
-    const nombreCarpeta = './public/files/'+name;
+    const nombreCarpeta = path.join(__dirname, 'public', 'files', name);
     // Verificar si la carpeta ya existe
     if (!fs.existsSync(nombreCarpeta)) {
     // Crear la carpeta
@@ -58,7 +58,7 @@ function crearCarpeta(name){
     }
 }
 function eliminarCarpeta(name) {
-    const nombreCarpeta = './public/files/'+name; // Ruta de la carpeta que deseas eliminar
+    const nombreCarpeta = path.join(__dirname, 'public', 'files', name); // Ruta de la carpeta que deseas eliminar
     // Elimina la carpeta y su contenido de forma recursiva
     fse.remove(nombreCarpeta)
       .then(() => {
