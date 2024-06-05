@@ -116,14 +116,15 @@ const sendVideo=async(cod)=>{
 
 function extractVideoId(url) {
     const urlObj = new URL(url);
-    const pathname = urlObj.pathname;
-    const videoId = pathname.split('/')[1]; // El ID del video es la segunda parte del pathname
-    return videoId;
-}
 
-const trial=(t)=>{
-    return (req,res)=>{
-        res.json({[t]:t})
+    if (urlObj.hostname === 'youtu.be') {
+        // Para URLs del tipo https://youtu.be/WeMXdaId60U
+        return urlObj.pathname.split('/')[1];
+    } else if (urlObj.hostname === 'www.youtube.com' || urlObj.hostname === 'youtube.com') {
+        // Para URLs del tipo https://www.youtube.com/watch?v=WeMXdaId60U
+        return urlObj.searchParams.get('v');
+    } else {
+        throw new Error('URL de YouTube no válida');
     }
 }
 
