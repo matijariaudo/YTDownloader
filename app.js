@@ -36,7 +36,7 @@ app.get('/api',async(req,res)=>{
 app.get('/test',async(req,res)=>{
     //const url=await sendVideo("lGNwnstqAO4")
     //const baseUrl = `${req.protocol}://${req.get('host')}`;
-    send("5493406460886@s.whatsapp.net",`I send to you the audio`)
+    send("5493406460886@s.whatsapp.net",`⚠️ New supplier has arrived.`)
     return res.json({a:"a"})
 
 })
